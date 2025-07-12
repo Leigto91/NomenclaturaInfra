@@ -2,38 +2,372 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Interpretador de Nomenclaturas</title>
+  <title>Interpretador de Nomenclaturas 5G v8</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    textarea { width: 100%; height: 120px; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f0f0f0; }
-    .error { color: red; font-weight: bold; }
-    a { text-decoration: none; color: #0056b3; }
+    /* Paleta de colores profesionales y modernos */
+    :root {
+      --color-primary: #0056b3; /* Azul oscuro para elementos principales */
+      --color-secondary: #007bff; /* Azul más vibrante para enlaces */
+      --color-accent: #28a745; /* Verde para acciones de éxito */
+      --color-text-dark: #343a40; /* Texto oscuro para títulos */
+      --color-text-medium: #495057; /* Texto de cuerpo */
+      --color-background-light: #f8f9fa; /* Fondo muy claro */
+      --color-background-medium: #e9ecef; /* Fondo gris claro para contenedores secundarios */
+      --color-border: #ced4da; /* Borde suave */
+      --color-white: #ffffff; /* Este color ahora se usará menos para fondos grandes */
+      --color-shadow: rgba(0, 0, 0, 0.08); /* Sombra sutil */
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif; /* Tipografía principal */
+      background-color: var(--color-background-light); /* Fondo suave */
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6; /* Mejorar legibilidad */
+      color: var(--color-text-medium);
+      display: flex;
+      justify-content: center; /* Centrar el contenido horizontalmente */
+      align-items: flex-start; /* Alinear el contenido al inicio verticalmente */
+      min-height: 100vh; /* Ocupar al menos el alto de la ventana */
+    }
+
+    .container {
+      /* Ahora el contenedor principal tiene el mismo color de fondo que el body */
+      background-color: var(--color-background-light); 
+      padding: 30px; /* Padding ligeramente reducido */
+      border-radius: 10px; /* Bordes más redondeados */
+      /* Sombra más pronunciada para diferenciar el contenedor, ya que el fondo es el mismo */
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1); 
+      max-width: 900px; /* Ancho máximo para el contenido */
+      width: 100%; /* Asegurar que ocupe el ancho disponible */
+      margin: 20px 0; /* Margen superior e inferior */
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      color: var(--color-primary);
+      margin-top: 0; /* Lo reseteamos o lo pones en 0 para pegarse a la firma */
+      margin-bottom: 25px; /* Mantenemos este para separar del textarea */
+      font-weight: 500;
+    }
+    /* --- */
+    /* Nuevo estilo para la línea de firma debajo del título principal */
+    .signature-line {
+      display: block;
+      text-align: center;
+      font-size: 16px;
+      color: var(--color-text-medium);
+      margin-top: 0; /* Lo reseteamos o lo pones en 0, ya que es el primero ahora */
+      margin-bottom: 5px; /* Ajusta este valor para que se acerque al h2 */
+      opacity: 0.7;
+      font-weight: 600;
+    }
+    /* --- */
+
+    textarea {
+      width: 100%;
+      height: 110px; /* Altura ligeramente reducida */
+      margin-bottom: 15px; /* Espacio debajo del textarea */
+      padding: 10px; /* Padding ligeramente reducido */
+      font-size: 16px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px; /* Bordes redondeados */
+      box-sizing: border-box; /* Incluir padding y borde en el ancho */
+      resize: vertical; /* Permitir redimensionar verticalmente */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: var(--color-white); /* Mantener blanco para el input */
+    }
+
+    textarea:focus {
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      outline: none;
+    }
+    /* Nuevo estilo para el contenedor del botón */
+    .button-container {
+      text-align: center; /* Centra el contenido (el botón) horizontalmente */
+      margin-bottom: 20px; /* Mantiene el espacio inferior del botón */
+    }
+
+    button {
+      background-color: var(--color-primary); /* Color principal para el botón */
+      color: var(--color-white);
+      border: none;
+      padding: 10px 20px; /* Padding ligeramente reducido */
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil para el botón */
+    }
+
+    button:hover {
+      background-color: #004085; /* Tono más oscuro al pasar el mouse */
+      transform: translateY(-2px); /* Pequeño efecto de elevación */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px; /* Espacio sobre la tabla */
+      background-color: var(--color-white); /* La tabla sigue siendo blanca para destacar */
+      box-shadow: 0 2px 8px var(--color-shadow); /* Sombra para la tabla */
+      border-radius: 8px; /* Bordes redondeados para la tabla */
+      overflow: hidden; /* Asegura que los bordes redondeados se apliquen al contenido */
+    }
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto; /* Permite el desplazamiento horizontal si el contenido es muy ancho */
+      -webkit-overflow-scrolling: touch; /* Mejora el scroll en dispositivos iOS */
+    }
+    
+    th, td {
+      border: 1px solid var(--color-border); /* Bordes más suaves */
+      padding: 10px 12px; /* Padding ligeramente reducido en celdas */
+      text-align: left;
+      font-size: 14px; /* Tamaño de fuente ligeramente menor en tabla */
+    }
+
+    th {
+      background-color: var(--color-background-medium); /* Fondo gris claro para encabezados */
+      color: var(--color-text-dark); /* Color de texto para encabezados */
+      font-weight: 600; /* Más negrita para encabezados */
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--color-background-light); /* Usar una variable para un gris claro */
+    }
+
+    tr:hover {
+      background-color: #e6f2ff; /* Resaltado suave al pasar el mouse por la fila */
+    }
+
+    .error {
+      color: #dc3545; /* Rojo de peligro */
+      font-weight: 600;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--color-secondary); /* Azul para enlaces */
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--color-primary); /* Tono más oscuro al pasar el mouse */
+      text-decoration: underline;
+    }
+
+    /* Estilos para la sección de enlaces adicionales */
+    .links-adicionales {
+      margin-top: 30px; /* Espacio sobre la sección de enlaces */
+    }
+
+    /* Estilos para los títulos dentro de links-adicionales */
+    .links-adicionales h3 {
+      margin-top: 0; /* Mantenemos este en 0 para el primer h3 */
+      color: var(--color-text-dark);
+      font-size: 17px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      text-align: left;
+      padding-top: 15px;
+      background-color: var(--color-background-medium);
+      padding-left: 15px;
+      padding-right: 15px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* NUEVA REGLA: Añadir un margen superior a los h3 que no son el primer hijo */
+    .links-adicionales h3 + .info-table {
+      margin-top: 5px; /* Pequeño ajuste para que la tabla no se pegue al título */
+    }
+
+    .links-adicionales h3:not(:first-child) {
+      margin-top: 25px; /* Ajusta este valor para dar más o menos espacio */
+    }
+
+    /* Estilos para las listas de enlaces dentro de links-adicionales */
+    .links-adicionales ul {
+      list-style: none;
+      padding: 0 15px 15px; /* Ajusta el padding de la lista para que coincida con el h3 */
+      margin: 0; /* Elimina margen por defecto del ul */
+      background-color: var(--color-white); /* Fondo blanco para las listas */
+      box-shadow: 0 2px 8px var(--color-shadow); /* Sombra para cada bloque de lista */
+      border-bottom-left-radius: 6px; /* Bordes redondeados en la parte inferior */
+      border-bottom-right-radius: 6px;
+      margin-bottom: 20px; /* Espacio entre bloques de enlaces */
+    }
+
+    .links-adicionales li {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .links-adicionales li:last-child {
+      margin-bottom: 0;
+    }
+    /* Estilos para la firma */
+    .footer-signature {
+      text-align: center;
+      margin-top: 40px; /* Mayor espacio para separarla del contenido */
+      font-size: 13px; /* Tamaño de fuente más pequeño */
+      color: var(--color-text-medium); /* Color de texto más suave */
+      opacity: 0.7; /* Ligeramente transparente */
+    }
+    /* Estilos para la tabla informativa */
+    .info-table {
+      width: 100%; /* Ocupa todo el ancho disponible */
+      border-collapse: collapse; /* Bordes unidos */
+      margin-top: 15px; /* Espacio superior para separarla del contenido anterior */
+      background-color: var(--color-white); /* Fondo blanco */
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); /* Sombra más sutil */
+      border-radius: 6px; /* Bordes redondeados */
+      overflow: hidden; /* Asegura que la sombra y borde redondeado se apliquen bien */
+      font-size: 13px; /* Fuente un poco más pequeña que la tabla de resultados */
+    }
+
+    .info-table th, .info-table td {
+      border: 1px solid var(--color-border); /* Bordes suaves */
+      padding: 8px 10px; /* Padding reducido */
+      text-align: left;
+    }
+
+    .info-table th {
+      background-color: var(--color-background-medium); /* Fondo gris claro para encabezados */
+      color: var(--color-text-dark); /* Texto oscuro */
+      font-weight: 600; /* Negrita */
+    }
+
+    .info-table tr:nth-child(even) {
+      background-color: #f7f7f7; /* Cebra aún más suave para filas pares */
+    }
+
+    .info-table tr:hover {
+      background-color: #eef8ff; /* Resaltado suave al pasar el mouse */
+    }
   </style>
 </head>
 <body>
-  <h2>Interpretador de Códigos de Nomenclatura</h2>
-  <textarea id="inputCodigos" placeholder="Pegá aquí los códigos, uno por línea..."></textarea>
-  <button onclick="interpretarMultiples()">Interpretar</button>
+  <div class="container">
+    <span class="signature-line">NOC-MO</span> <h2>Interpretador de Códigos de Nomenclatura 5G</h2>
 
-  <table id="tablaResultados">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>País</th>
-        <th>Provincia</th>
-        <th>Sitio</th>
-        <th>Data Center</th>
-        <th>Equipo</th>
-        <th>Tipo</th>
-        <th>Número</th>
-        <th>Link Grafana</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <textarea id="inputCodigos" placeholder="Pegue aquí los códigos, uno por línea o separados por coma..."></textarea>
+    
+    <div class="button-container">
+      <button id="btnInterpretar">Interpretar</button>
+    </div>
+
+    <div class="table-responsive">
+      <table id="tablaResultados">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>País</th>
+            <th>Provincia</th>
+            <th>Sitio</th>
+            <th>Data Center</th>
+            <th>Equipo</th>
+            <th>Tipo</th>
+            <th>Número</th>
+            <th>Link Grafana</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="links-adicionales">
+      <h3>Enlaces de Interés</h3>
+      <ul>
+        <li>
+          <a href="http://grafana-teco.telecom.com.ar:3000/d/c0239a12-c598-4291-a18b-01fa48bfc030/estado-de-despliegue-core-5gc?orgId=6&viewPanel=1" target="_blank">
+            🚦 CORE 5G Infra (Estado de Despliegue) 🚦
+          </a>
+        </li>
+      </ul>
+
+      <h3>CDC/EDC por Sitio</h3> 
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th>Sitio</th>
+            <th>EDC/CDC</th>
+          </tr>
+        </thead>
+        <tbody id="tbodySitiosDC">
+        </tbody>
+      </table>
+
+      <h3>Control Plane 5GC</h3> 
+      <table class="info-table"> 
+        <thead>
+          <tr>
+            <th>Nodo</th>
+            <th>Ubicación Topológica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SMF1BEL - AMF1BEL</td>
+            <td>ARCCBEL-DGM003/4 / UNC / HA 5GC / BEL01CDC</td>
+          </tr>
+          <tr>
+            <td>SMF1HOR - AMF1HOR - NCG1HOR</td>
+            <td>ARCCHOR-DGM003/4 / UNC / HA 5GC / HOR01DC</td>
+          </tr>
+          <tr>
+            <td>SMF1SLO - AMF1SLO - NCG1SLO</td>
+            <td>ARBBSLO-DGM003/4 / UNC / HA 5GC / SLO01DC</td> 
+          </tr>
+        </tbody>
+      </table>
+      <h3>User Plane 5GC</h3> 
+      <table class="info-table"> 
+        <thead>
+          <tr>
+            <th>Nodo</th>
+            <th>Ubicación Topológica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>UPF1COR</td>
+            <td>ARXXCEN-DGM001/2 / UDG / HA 5GC / COR01EDC</td>
+          </tr>
+          <tr>
+            <td>UPF1HOR</td>
+            <td>ARCCHOR-DGM001/2 / UDG / HA 5GC / HOR01EDC</td>
+          </tr>
+          <tr>
+            <td>UPF1RES</td>
+            <td>ARHHRES-DGM001/2 / UDG / HA 5GC / RES01EDC</td>
+          </tr>
+          <tr>
+            <td>UPF1ROS</td>
+            <td>ARSSIRD-DGM001/2 / UDG / HA 5GC / ROS01EDC</td> 
+          </tr>
+          <tr>
+            <td>UPF1SLO</td>
+            <td>ARBBSLO-DGM001/2 / UDG / HA 5GC / SLO01EDC</td>
+          </tr>
+          <tr>
+            <td>UPF1TUC</td>
+            <td>ARTTMUS-DGM001/2 / UDG / HA 5GC / TUC01EDC</td> 
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer-signature">
+      · NOC-MO · 2025 ·  
+      đ♜
+    </div>
+  </div>
 
   <script>
     const paises = { "AR": "Argentina" };
@@ -44,12 +378,10 @@
     const sitios = {
       "SLO": "San Lorenzo", "HOR": "Hornos", "BEL": "Belgrano",
       "CEN": "Córdoba Centro", "GLF": "Golf", "MUS": "Muñecas",
-      "RES": "Resistencia", "IRD": "Rosario"
+      "RES": "Resistencia", "IRD": "Rosario", "MUN": "Munro",
     };
     const tipoDC = {
-      "C": "CDC", "E": "EDC", "DEF": "Router de Frontera (DEF)",
-      "DGM": "Router de Frontera (DGM)", "001": "EDC", "002": "EDC",
-      "003": "CDC", "004": "CDC"
+      "C": "CDC", "E": "EDC"
     };
     const equipos = { "E": "EOR (Spine)", "T": "TOR (Leaf)" };
     const tipoEquipo = { "S": "Service", "M": "Management", "D": "Dual" };
@@ -85,67 +417,148 @@
       "Rosario": {
         "EDC": "http://grafana-teco.telecom.com.ar:3000/d/2_8Q89KSzdf/topologia-rosario-edc-5gc?orgId=6&refresh=1m"
       },
-      "Tucumán": {
+      "Muñecas": {
         "EDC": "http://grafana-teco.telecom.com.ar:3000/d/2_8Q89KStg/topologia-tucuman-edc-5gc?orgId=6&refresh=1m"
+      },
+      "Munro": {
+        "CDC": "http://10.172.4.22:3000/d/jja8s9Fws/topologia-munro-cdc-5gc?orgId=6&refresh=1m"
       }
     };
 
-    function obtenerLink(sitio, tipoDC) {
-      const links = grafanaLinks[sitio];
-      if (!links || !links[tipoDC]) return "";
-      const l = links[tipoDC];
-      if (Array.isArray(l)) return l.map((url, i) => `<a href='${url}' target='_blank'>Link ${i + 1}</a>`).join("<br>");
-      return `<a href='${l}' target='_blank'>Ver topología</a>`;
+    // Datos para la tabla CDC/EDC por Sitio
+    const datosSitiosDC = [
+      { sitio: "Belgrano", tipoDC: "CDC" },
+      // { sitio: "Munro", tipoDC: "CDC (No Productivo)" }, // Descomentar si es necesario y ajustar la lógica de enlaces en generarTablaSitiosDC
+      { sitio: "Hornos", tipoDC: "CDC - EDC" },
+      { sitio: "San Lorenzo", tipoDC: "CDC - EDC" },
+      { sitio: "Golf", tipoDC: "CDC - EDC" },
+      { sitio: "Resistencia", tipoDC: "EDC" },
+      { sitio: "Rosario", tipoDC: "EDC" },
+      { sitio: "Muñecas", tipoDC: "EDC" },
+      { sitio: "Córdoba Centro", tipoDC: "EDC" }
+    ];
+
+    // Función para obtener un link específico (CDC o EDC) o todos si no se especifica
+    function obtenerLinkEspecifico(sitioCodigo, dcTipo) {
+      const sitioNombre = sitios[sitioCodigo];
+      if (!sitioNombre) return "<span class='error'>Sitio no encontrado</span>";
+
+      const enlacesDelSitio = grafanaLinks[sitioNombre];
+      if (!enlacesDelSitio) return "<span class='error'>Sin topología disponible</span>";
+
+      // Si se especifica un tipo de DC ('C' para CDC, 'E' para EDC)
+      if (dcTipo) {
+        const tipoEnlace = (dcTipo === 'C') ? 'CDC' : 'EDC';
+        const linkData = enlacesDelSitio[tipoEnlace];
+
+        if (linkData) {
+          if (Array.isArray(linkData)) {
+            // Si hay múltiples enlaces para ese tipo, listarlos todos
+            return linkData.map((url, i) => `<a href='${url}' target='_blank'>${tipoEnlace} Link ${i + 1}</a>`).join("<br>");
+          } else {
+            // Si es un solo enlace para ese tipo
+            return `<a href='${linkData}' target='_blank'>${tipoEnlace}</a>`;
+          }
+        }
+      }
+      
+      // Si no se especificó un tipo de DC o no se encontró un enlace específico,
+      // volvemos a la lógica anterior de mostrar todos los enlaces disponibles para ese sitio.
+      const resultados = [];
+      for (const tipo in enlacesDelSitio) {
+        const data = enlacesDelSitio[tipo];
+        if (Array.isArray(data)) {
+          data.forEach((url, i) => resultados.push(`<a href='${url}' target='_blank'>${tipo} Link ${i + 1}</a>`));
+        } else {
+          resultados.push(`<a href='${data}' target='_blank'>${tipo}</a>`);
+        }
+      }
+      // Si no se encontró ningún link, o si no hay enlaces en general
+      if (resultados.length === 0) {
+          return "<span class='error'>Sin topología disponible</span>";
+      }
+      return resultados.join("<br>");
     }
 
     function interpretar(codigo) {
       const [parte1, parte2] = codigo.split("-");
-      const codPais = parte1?.slice(0,2);
-      const codProvincia = parte1?.slice(2,4);
-      const codSitio = parte1?.slice(4,7);
+      const codPais = parte1?.slice(0, 2);
+      const codProvincia = parte1?.slice(2, 4);
+      const codSitio = parte1?.slice(4, 7);
 
       let pais = paises[codPais];
       let provincia = provincias[codProvincia];
       let sitio = sitios[codSitio];
 
-      let dataCenter, equipo, tipo, numero;
+      let dataCenter = "N/A";
+      let equipo = "N/A";
+      let tipo = "N/A";
+      let numero = "-";
+      let dcTipoCodigo = ""; // Almacenará 'C' o 'E' si aplica
+
       const isFrontera = parte2?.startsWith("DEF") || parte2?.startsWith("DGM");
 
       if (isFrontera) {
-        const fronteraKey = parte2.slice(0,3);
-        dataCenter = tipoDC[fronteraKey];
         equipo = "Router de Frontera";
         tipo = "N/A";
-        numero = parte2.slice(3);
-      } else {
-        const codDC = parte2?.slice(0,1);
-        const codEquipo = parte2?.slice(1,2);
-        const codTipo = parte2?.slice(2,3);
         numero = parte2?.slice(3);
+
+        if (parte2?.startsWith("DEF")) {
+          dataCenter = "Router de Frontera (DEF)";
+          dcTipoCodigo = ""; // No aplica CDC/EDC directamente a DEF
+        } else if (parte2?.startsWith("DGM")) {
+          const numDGM = parseInt(numero, 10);
+          if (numDGM === 1 || numDGM === 2) {
+            dataCenter = "Router de Frontera (DGM - EDC)";
+            dcTipoCodigo = "E"; // Indica que es un EDC
+          } else if (numDGM === 3 || numDGM === 4) {
+            dataCenter = "Router de Frontera (DGM - CDC)";
+            dcTipoCodigo = "C"; // Indica que es un CDC
+          } else {
+            dataCenter = `Router de Frontera (DGM - Desconocido: ${numero})`;
+            dcTipoCodigo = "";
+          }
+        } else {
+          dataCenter = `Router de Frontera (ERROR: ${parte2})`;
+        }
+      } else if (parte2) { // Solo intentar interpretar parte2 si existe y no es de frontera
+        const codDC = parte2.slice(0, 1);
+        const codEquipo = parte2.slice(1, 2);
+        const codTipo = parte2.slice(2, 3);
+        numero = parte2.slice(3);
 
         dataCenter = tipoDC[codDC];
         equipo = equipos[codEquipo];
         tipo = tipoEquipo[codTipo];
+        dcTipoCodigo = codDC; // Asignar el código DC (C o E)
+      } else {
+        // Si no hay parte2, dataCenter, equipo, tipo y numero se quedan en sus valores por defecto "N/A", "-"
       }
 
-      const link = (sitio && dataCenter) ? obtenerLink(sitio, dataCenter) : "";
+      // Aquí es donde llamamos a la función obtenerLinkEspecifico
+      const link = obtenerLinkEspecifico(codSitio, dcTipoCodigo);
 
       return {
         codigo,
         pais: pais || `⚠️ ERROR (${codPais})`,
         provincia: provincia || `⚠️ ERROR (${codProvincia})`,
         sitio: sitio || `⚠️ ERROR (${codSitio})`,
-        dataCenter: dataCenter || `⚠️ ERROR (${parte2?.slice(0,3)})`,
-        equipo: equipo || `⚠️ ERROR (${parte2?.slice(1,2)})`,
-        tipo: tipo || `⚠️ ERROR (${parte2?.slice(2,3)})`,
+        dataCenter: dataCenter || `⚠️ ERROR (${parte2 ? parte2.slice(0, 1) : 'N/A'})`,
+        equipo: equipo || `⚠️ ERROR (${parte2 ? parte2.slice(1, 2) : 'N/A'})`,
+        tipo: tipo || `⚠️ ERROR (${parte2 ? parte2.slice(2, 3) : 'N/A'})`,
         numero: numero || "-",
         link
       };
     }
 
-    function interpretarMultiples() {
-      const input = document.getElementById("inputCodigos").value;
-      const codigos = input.split("\n").map(c => c.trim()).filter(c => c);
+    function interpretarMultiples(codigosExternos = null) {
+      const input = codigosExternos || document.getElementById("inputCodigos").value;
+      const codigos = input.split("\n").flatMap(c => c.split(",")).map(c => c.trim()).filter(c => c);
+
+      // Actualizar la URL con los códigos
+      const nuevaURL = `${location.pathname}?q=${encodeURIComponent(codigos.join(","))}`;
+      history.replaceState(null, "", nuevaURL);
+
       const tbody = document.querySelector("#tablaResultados tbody");
       tbody.innerHTML = "";
 
@@ -160,6 +573,76 @@
         tbody.appendChild(fila);
       });
     }
+
+    function generarTablaSitiosDC() {
+      const tbody = document.getElementById("tbodySitiosDC");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      datosSitiosDC.forEach(item => {
+        const fila = document.createElement("tr");
+
+        const tdSitio = document.createElement("td");
+        tdSitio.textContent = item.sitio;
+        fila.appendChild(tdSitio);
+
+        const tdTipoDC = document.createElement("td");
+        let linkContent = "";
+
+        const sitioCodigo = Object.keys(sitios).find(key => sitios[key] === item.sitio);
+
+        // Aquí, en la tabla de sitios, también podemos usar obtenerLinkEspecifico
+        // Si tienes "CDC - EDC", quizás quieras listar ambos o un texto sin link
+        // Por ahora, si es "CDC - EDC", mostrará ambos links usando la lógica por defecto de obtenerLinkEspecifico
+        if (sitioCodigo) {
+          if (item.tipoDC.includes("No Productivo")) {
+            linkContent = item.tipoDC; // Solo texto si no es productivo
+          } else if (item.tipoDC.includes("CDC - EDC")) {
+            // Llama a la función para obtener AMBOS links (CDC y EDC) si el sitio tiene los dos
+            linkContent = obtenerLinkEspecifico(sitioCodigo, 'C') + "<br>" + obtenerLinkEspecifico(sitioCodigo, 'E');
+          }
+          else if (item.tipoDC.includes("CDC")) {
+            linkContent = obtenerLinkEspecifico(sitioCodigo, 'C'); // Solo link CDC
+          } else if (item.tipoDC.includes("EDC")) {
+            linkContent = obtenerLinkEspecifico(sitioCodigo, 'E'); // Solo link EDC
+          } else {
+             // Fallback si no encaja en las categorías anteriores, muestra todos los disponibles
+             linkContent = obtenerLinkEspecifico(sitioCodigo);
+          }
+        } else {
+          linkContent = `<span class='error'>${item.tipoDC} (Sitio/Link no disponible)</span>`;
+        }
+
+        tdTipoDC.innerHTML = linkContent;
+        fila.appendChild(tdTipoDC);
+        tbody.appendChild(fila);
+      });
+    }
+
+    // Si hay parámetros ?q=... en la URL, cargarlos al iniciar
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const query = params.get("q");
+      if (query) {
+        document.getElementById("inputCodigos").value = query.split(",").join("\n");
+        interpretarMultiples(query);
+      }
+
+      const btnInterpretar = document.getElementById("btnInterpretar");
+      if (btnInterpretar) {
+        btnInterpretar.addEventListener("click", () => interpretarMultiples());
+      }
+
+      // Llamada a la función para generar la tabla "CDC/EDC por Sitio"
+      generarTablaSitiosDC();
+
+      // Código para la funcionalidad de Agregar Sitio (si la quieres activar)
+      // const btnAgregarSitio = document.getElementById("btnAgregarSitio");
+      // if (btnAgregarSitio) {
+      //     btnAgregarSitio.addEventListener("click", agregarNuevoSitio);
+      // }
+    });
   </script>
 </body>
 </html>
